@@ -1,0 +1,231 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+<section class="hero-band">
+  <div class="hero-copy">
+    <p class="eyebrow">Machine Learning Banking Workflow</p>
+    <h1>Credit Card Approval Prediction</h1>
+    <p class="hero-text">
+      Screen applicant profiles with a trained classification model, review the approval likelihood,
+      and surface the risk signals that need analyst attention.
+    </p>
+  </div>
+
+  <div class="hero-visual" aria-label="Credit card approval dashboard preview">
+    <div class="credit-card-visual">
+      <div class="card-chip"></div>
+      <div class="card-lines">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="card-bottom">
+        <strong>APPROVAL</strong>
+        <small>ML VERIFIED</small>
+      </div>
+    </div>
+    <div class="model-stat">
+      <span>Model</span>
+      <strong>{{ metrics.best_model.model_name if metrics and metrics.best_model else "Auto training" }}</strong>
+    </div>
+  </div>
+</section>
+
+<section class="workspace-grid">
+  <form class="panel input-panel" method="post" action="{{ url_for('index') }}">
+    <div class="panel-heading">
+      <div>
+        <p class="eyebrow">Applicant Profile</p>
+        <h2>Application Details</h2>
+      </div>
+      <button class="primary-button" type="submit">Predict Decision</button>
+    </div>
+
+    {% if errors %}
+      <div class="alert-list" role="alert">
+        {% for error in errors %}
+          <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="form-grid">
+      <label>
+        <span>Gender</span>
+        <select name="gender">
+          {% for option in form_options.gender %}
+            <option value="{{ option }}" {% if form_values.gender == option %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label>
+        <span>Age</span>
+        <input type="number" name="age" min="18" max="80" step="1" value="{{ form_values.age }}" required>
+      </label>
+
+      <label>
+        <span>Annual Income</span>
+        <input data-money-input type="number" name="annual_income" min="1" step="1" value="{{ form_values.annual_income }}" required>
+      </label>
+
+      <label>
+        <span>Income Type</span>
+        <select name="income_type">
+          {% for option in form_options.income_type %}
+            <option value="{{ option }}" {% if form_values.income_type == option %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label>
+        <span>Employment Years</span>
+        <input type="number" name="employment_years" min="0" max="60" step="0.1" value="{{ form_values.employment_years }}" required>
+      </label>
+
+      <label>
+        <span>Education Level</span>
+        <select name="education_level">
+          {% for option in form_options.education_level %}
+            <option value="{{ option }}" {% if form_values.education_level == option %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label>
+        <span>Family Status</span>
+        <select name="family_status">
+          {% for option in form_options.family_status %}
+            <option value="{{ option }}" {% if form_values.family_status == option %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label>
+        <span>Family Members</span>
+        <input type="number" name="family_members" min="1" max="12" step="1" value="{{ form_values.family_members }}" required>
+      </label>
+
+      <label>
+        <span>Children</span>
+        <input type="number" name="children_count" min="0" max="10" step="1" value="{{ form_values.children_count }}" required>
+      </label>
+
+      <label>
+        <span>Housing Type</span>
+        <select name="housing_type">
+          {% for option in form_options.housing_type %}
+            <option value="{{ option }}" {% if form_values.housing_type == option %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label>
+        <span>Owns Car</span>
+        <select name="own_car">
+          {% for option in form_options.own_car %}
+            <option value="{{ option }}" {% if form_values.own_car == option %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label>
+        <span>Owns Property</span>
+        <select name="own_property">
+          {% for option in form_options.own_property %}
+            <option value="{{ option }}" {% if form_values.own_property == option %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label>
+        <span>Existing Loan Balance</span>
+        <input data-loan-input type="number" name="existing_loan_balance" min="0" step="1" value="{{ form_values.existing_loan_balance }}" required>
+      </label>
+
+      <label>
+        <span>Credit Inquiries, 6 Months</span>
+        <input type="number" name="credit_inquiries_6m" min="0" max="30" step="1" value="{{ form_values.credit_inquiries_6m }}" required>
+      </label>
+
+      <label>
+        <span>Payment Status</span>
+        <select name="payment_status">
+          {% for option in form_options.payment_status %}
+            <option value="{{ option }}" {% if form_values.payment_status == option %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <div class="ratio-preview" aria-live="polite">
+        <span>Debt-to-income</span>
+        <strong data-ratio-output>0.13</strong>
+      </div>
+    </div>
+
+    <input type="hidden" name="mobile_phone" value="{{ form_values.mobile_phone }}">
+    <input type="hidden" name="work_phone" value="{{ form_values.work_phone }}">
+    <input type="hidden" name="phone" value="{{ form_values.phone }}">
+    <input type="hidden" name="email" value="{{ form_values.email }}">
+    <input type="hidden" name="total_months" value="{{ form_values.total_months }}">
+  </form>
+
+  <aside class="panel result-panel">
+    <div class="panel-heading compact">
+      <div>
+        <p class="eyebrow">Prediction Result</p>
+        <h2>Decision Summary</h2>
+      </div>
+    </div>
+
+    {% if result %}
+      <div class="decision {{ 'approved' if result.decision == 'Approved' else 'rejected' }}">
+        <span>{{ result.decision }}</span>
+        <strong>{{ result.approval_probability_percent }}%</strong>
+      </div>
+      <div class="result-meta">
+        <div>
+          <span>Risk Level</span>
+          <strong>{{ result.risk_level }}</strong>
+        </div>
+        <div>
+          <span>Model Used</span>
+          <strong>{{ result.model_name }}</strong>
+        </div>
+      </div>
+      <div class="reason-list">
+        <h3>Key Signals</h3>
+        {% for reason in result.reasons %}
+          <p>{{ reason }}</p>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-result">
+        <span class="status-dot"></span>
+        <p>Submit an applicant profile to see the approval probability and risk signals.</p>
+      </div>
+    {% endif %}
+
+    {% if metrics and metrics.best_model %}
+      <div class="training-summary">
+        <h3>Training Snapshot</h3>
+        <dl>
+          <div>
+            <dt>Accuracy</dt>
+            <dd>{{ "%.1f"|format(metrics.best_model.accuracy * 100) }}%</dd>
+          </div>
+          <div>
+            <dt>F1 Score</dt>
+            <dd>{{ "%.1f"|format(metrics.best_model.f1_score * 100) }}%</dd>
+          </div>
+          <div>
+            <dt>Rows</dt>
+            <dd>{{ metrics.training_rows + metrics.testing_rows }}</dd>
+          </div>
+        </dl>
+      </div>
+    {% endif %}
+  </aside>
+</section>
+{% endblock %}
+
