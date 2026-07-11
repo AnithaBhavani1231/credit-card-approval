@@ -19,7 +19,6 @@ Banks receive a large number of applications every day. Reviewing every profile 
 
 ## Project Structure
 
-```text
 Credit Card Approval Prediction/
 │
 ├── app.py
@@ -37,16 +36,23 @@ Credit Card Approval Prediction/
 │   ├── raw/
 │   └── processed/
 │
+├── docs/
+│   └── Project Documentation.docx
+│
 ├── models/
+│   ├── credit_card_approval_model.joblib
+│   └── model_metrics.json
+│
 ├── notebooks/
 ├── reports/
+│   └── figures/
 ├── scripts/
 ├── static/
 ├── templates/
+├── .gitignore
+├── README.md
 ├── requirements.txt
-├── requirements-watson.txt
-└── README.md
-```
+└── requirements-watson.txt
 
 ## Technologies Used
 
