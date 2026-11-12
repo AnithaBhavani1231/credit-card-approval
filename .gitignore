@@ -25,3 +25,10 @@ htmlcov/
 *.log
 .DS_Store
 Thumbs.db
+.vs/
+**/.vs/
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
